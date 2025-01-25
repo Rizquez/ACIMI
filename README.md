@@ -24,10 +24,19 @@ FLASK_ENV = execution_enviroment
 ## Estructura del proyecto
 ```
 ACIMI/
+├── design
+│   └── singleton.py
 ├── settings
 │   ├── _base.py
 │   ├── constants.py
 │   └── settings.py
+├── src
+│   ├── app
+│   │   ├── routes/...
+│   │   ├── static/...
+│   │   └── templates/...
+│   ├── services
+│   └── utils
 ├── .env (local file)
 ├── .gitignore
 ├── main.py
@@ -94,7 +103,7 @@ No se aceptarán `pull requests` ni `issues` nuevos, tampoco se permite hacer `F
 Gracias por su comprensión.
 
 ## Licencia
-ACIMI se licencia bajo (CC BY-NC-ND 4.0)[https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1].
+ACIMI se licencia bajo [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1).
 
 Este software está protegido por derechos de autor. No se permite la redistribución, modificación o copia de este código en ninguna forma sin el permiso explícito del propietario. Cualquier uso no autorizado será perseguido bajo la ley aplicable.
 

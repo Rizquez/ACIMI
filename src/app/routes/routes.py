@@ -1,8 +1,9 @@
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 # LIBRERIAS (EXTERNAS)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
-import os
-import binascii
+from flask import Flask
+from dotenv import load_dotenv
+load_dotenv(override=False)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
 # LIBRERIAS (INTERNAS)
@@ -10,41 +11,11 @@ import binascii
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
-class _SettingGlobal(object):
-    """
-    Descripcion
-    -----------
-    Actua como una plantilla para todas las demas clases se definen las configuraciones segun cada entorno de ejecucion entornos de la aplicacion.
-    """
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = binascii.hexlify(os.urandom(48)).decode()
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-class Development(_SettingGlobal):
-    """
-    Descripcion
-    -----------
-    Define la configuracion del entorno de `Desarollo`.
-    """
-    ENV = 'development'
-    HOST = '127.0.0.1'
-    PORT = '8080'
-    DEBUG = True
-    TESTING = True
-
-class Production(_SettingGlobal):
-    """
-    Descripcion
-    -----------
-    Define la configuracion del entorno de `Produccion`.
-    """
-    ENV = 'production'
-    HOST = '0.0.0.0'
-    PORT = '8080'
-    DEBUG = False
-    TESTING = False
+@app.route('/')
+def home():
+    return "<h1>Hola!! Hemos comenzado!!</h1>"
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 # FIN DEL FICHERO
