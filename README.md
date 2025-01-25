@@ -12,9 +12,9 @@ El proyecto requiere ciertas variables de entorno para su funcionamiento, estas 
 
 La estructura esperada en el archivo `.env` es la siguiente:
 ```makefile
-MSQL_USER = sql_server_user
-MSQL_PASSWORD = sql_server_password
-MSQL_HOST = sql_server_host
+MSQL_USER = sql_user
+MSQL_PASSWORD = sql_password
+MSQL_HOST = sql_host
 FLASK_ENV = execution_enviroment
 ```
 
@@ -24,6 +24,10 @@ FLASK_ENV = execution_enviroment
 ## Estructura del proyecto
 ```
 ACIMI/
+├── settings
+│   ├── _base.py
+│   ├── constants.py
+│   └── settings.py
 ├── .env (local file)
 ├── .gitignore
 ├── main.py
@@ -60,15 +64,6 @@ Para ejecutar el proyecto, utiliza el siguiente comando:
 python main.py
 ```
 
-## Contribuciones
-Este proyecto está cerrado para contribuciones ⛔.
-
-No se aceptarán `pull requests` ni `issues` nuevos, tampoco se permite hacer `Fork` de este repositorio.
-
-Gracias por su comprensión.
-
-## Licencia
-
 ## Recursos adicionales
 
 ### Criterios de versionado semantico (x.xx.xxx)
@@ -90,3 +85,17 @@ class NameClass:
     def name_method(self, model_base: 'ModelBase') -> None:
         pass
 ```
+
+## Contribuciones
+Este proyecto está cerrado para contribuciones ⛔.
+
+No se aceptarán `pull requests` ni `issues` nuevos, tampoco se permite hacer `Fork` de este repositorio.
+
+Gracias por su comprensión.
+
+## Licencia
+ACIMI se licencia bajo (CC BY-NC-ND 4.0)[https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1].
+
+Este software está protegido por derechos de autor. No se permite la redistribución, modificación o copia de este código en ninguna forma sin el permiso explícito del propietario. Cualquier uso no autorizado será perseguido bajo la ley aplicable.
+
+© 2025 Pedro Rizquez Todos los derechos reservados.
