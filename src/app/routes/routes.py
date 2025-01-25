@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 # LIBRERIAS (EXTERNAS)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
-from flask import Flask
+from flask import Flask, render_template, redirect
 from dotenv import load_dotenv
 load_dotenv(override=False)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
@@ -15,7 +15,15 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 @app.route('/')
 def home():
-    return "<h1>Hola!! Hemos comenzado!!</h1>"
+    return render_template('index.html')
+
+@app.route('/error')
+def error():
+    return render_template('error.html')
+
+@app.errorhandler(404)
+def error_handler(error):
+    return redirect('/error')
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 # FIN DEL FICHERO

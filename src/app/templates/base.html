@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" {% block html_attributes %}{% endblock %}>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="icon web" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        {% block head_extra %}
+        {% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body {% block body_attributes %}{% endblock %}>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
