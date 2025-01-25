@@ -15,6 +15,7 @@ La estructura esperada en el archivo `.env` es la siguiente:
 MSQL_USER = sql_server_user
 MSQL_PASSWORD = sql_server_password
 MSQL_HOST = sql_server_host
+FLASK_ENV = execution_enviroment
 ```
 
 > [!NOTE]
@@ -37,9 +38,33 @@ Antes de ejecutar este proyecto, asegurate de tener instalados los siguientes re
 
 Ahora sigue estos pasos para configurar el entorno y ejecutar el proyecto:
 
+1. Clona este repositorio (ssh):
+```
+git clone git@github.com:Rizquez/ACIMI.git
+cd ACIMI
+```
+
+2. Crea un entorno virtual (opcional pero recomendado):
+```
+python -m venv venv
+venv\Scripts\activate # En Linux/macOS usa `source venv/bin/activate`
+```
+
+3. Instala las dependencias:
+```
+pip install -r requirements.txt
+```
+
+Para ejecutar el proyecto, utiliza el siguiente comando:
+```
+python main.py
+```
+
 ## Contribuciones
 Este proyecto está cerrado para contribuciones ⛔.
+
 No se aceptarán `pull requests` ni `issues` nuevos, tampoco se permite hacer `Fork` de este repositorio.
+
 Gracias por su comprensión.
 
 ## Licencia
