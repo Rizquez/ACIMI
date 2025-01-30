@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 /**
- * @file file_upload.js
+ * @file home.js
  * @description Maneja la visualizacion del nombre del archivo seleccionado en el formulario de carga.
  */
 document.addEventListener("DOMContentLoaded", function () {
