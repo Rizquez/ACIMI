@@ -2,7 +2,7 @@
 
 /**
  * @file utils.js
- * @description Maneja la visibilidad del formulario terciario y restringe la entrada de numeros enteros mayor o igual a 0
+ * @description Maneja la visibilidad del formulario terciario y restringe la entrada de numeros enteros mayor o igual a 0.
  */
 document.addEventListener("DOMContentLoaded", function () {
     var tipoCalculoElement = document.getElementById("calculotipo")
@@ -89,6 +89,30 @@ document.addEventListener("DOMContentLoaded", function () {
             fileNameDisplay.textContent = "Archivo seleccionado: " + fileInput.files[0].name
         } else {
             fileNameDisplay.textContent = "No se ha seleccionado ningun archivo"
+        }
+    })
+})
+
+
+/**
+ * @file utils.js
+ * @description Maneja la etiqueta `required` sobre los input del formulario que se activan unicamente para el calculo terciario.
+ */
+document.getElementById("calculotipo").addEventListener("change", function() {
+    let formTerciario = document.getElementById("form-terciario")
+    let isTerciario = this.value === "terciario"
+
+    formTerciario.classList.toggle("hide", !isTerciario)
+
+    // Obtener los campos dentro del formulario terciario
+    let fields = formTerciario.querySelectorAll("input, select")
+    
+    // Agregar o quitar required dependiendo de si es visible
+    fields.forEach(field => {
+        if (isTerciario) {
+            field.setAttribute("required", "required")
+        } else {
+            field.removeAttribute("required")
         }
     })
 })
