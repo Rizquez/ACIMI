@@ -27,13 +27,13 @@ def home():
     -----------
     Ruta raiz de la aplicacion.
 
-    Renderiza el fichero `index.html`.
+    Renderiza el fichero `home.html`.
 
     Retorna
     -------
-    - Documento `index.html` renderizado.
+    - Documento `home.html` renderizado.
     """
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/download_template/<tipo>')
 def download_template(tipo):

@@ -4,12 +4,4 @@
     display: none;
 }
 
-.select-item {
-    cursor: pointer;
-}
-
-.select-item:hover {
-    color: var(--primary-200);
-}
-
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/

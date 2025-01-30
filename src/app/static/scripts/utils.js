@@ -66,13 +66,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Asigna eventos de clic a los elementos de plantilla
-    document.querySelectorAll(".select-item").forEach(function (elemento) {
+    document.querySelectorAll(".template").forEach(function (elemento) {
         elemento.addEventListener("click", function () {
-            var tipo = this.getAttribute("data-tipo")
+            var tipo = this.getAttribute("tipo")
             if (tipo) {
                 downloadTemplate(tipo)
             }
         })
+    })
+})
+
+/**
+ * @file file_upload.js
+ * @description Maneja la visualizacion del nombre del archivo seleccionado en el formulario de carga.
+ */
+document.addEventListener("DOMContentLoaded", function () {
+    var fileInput = document.getElementById("fileupload")
+    var fileNameDisplay = document.getElementById("file-name")
+
+    fileInput.addEventListener("change", function () {
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = "Archivo seleccionado: " + fileInput.files[0].name
+        } else {
+            fileNameDisplay.textContent = "No se ha seleccionado ningun archivo"
+        }
     })
 })
 

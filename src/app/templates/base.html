@@ -11,8 +11,14 @@
         <title>{% block title %}{% endblock %}</title>
     </head>
     <body {% block body_attributes %}{% endblock %}>
-        {% block content %}
-        {% endblock %}
+        <header>
+            <img src="{{url_for('static', filename='images/engineering_team.png')}}" alt="Logo equipo de ingenieria">
+            <div class="templates">
+                <span class="template" tipo="terciario">Plantilla (calculo terciario)</span>
+                <span class="template" tipo="residencial">Plantilla (calculo residencial)</span>
+            </div>
+        </header>
+        {% block content %} {% endblock %}
     </body>
     <footer>
         <p>© ACIMI 2025. Todos los derechos reservados.</p>

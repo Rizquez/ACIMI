@@ -2,6 +2,7 @@
 
 @import url('./css/base.css');
 @import url('./css/error.css');
-@import url('./css/general.css');
+@import url('./css/global.css');
+@import url('./css/home.css');
 
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/
