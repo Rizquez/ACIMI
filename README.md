@@ -1,11 +1,32 @@
 # ACIMI - v0.0.0
 
 ## Contexto
+En el campo de la ingeniería mecánica aplicada a edificaciones, el cálculo de instalaciones mecánicas para uso residencial y terciario es una tarea esencial que involucra múltiples factores técnicos. La automatización de estos cálculos reduce errores, mejora la eficiencia y optimiza el tiempo de los profesionales del sector.
 
-## Descripcion del proyecto y sus caracteristicas
-__ACIMI__ por las siglas en Ingles _Automation of calculations in mechanical installations_
+Actualmente, muchos cálculos se realizan manualmente o mediante herramientas dispersas sin una solución integrada. ACIMI busca resolver esta problemática proporcionando una plataforma web que permite la entrada manual de datos o la carga de archivos Excel para automatizar estos cálculos.
 
-## Funcionalidad
+## Descripcion del proyecto, caracteristicas y funcionalidades
+__ACIMI__ proviene de las siglas en inglés _Automation of calculations in mechanical installations_, este proyecto es una aplicación web que permite a usuarios autenticados:
+- Ingresar manualmente datos requeridos para cálculos de instalaciones mecánicas.
+- Subir archivos Excel con datos estructurados para su procesamiento automático.
+- Obtener cálculos de tipo residencial o terciario con base en los datos ingresados.
+- Visualizar y descargar los resultados de los cálculos en diferentes formatos.
+
+### Características principales
+- __Autenticación y gestión de usuarios:__ Permite el acceso solo a usuarios registrados y autenticados.
+- __Interfaz intuitiva:__ Diseñada para facilitar la carga manual y la gestión de archivos.
+- __Automatización de cálculos:__ Procesamiento automatizado de cálculos específicos para instalaciones mecánicas.
+- __Soporte para archivos Excel:__ Capacidad para leer, interpretar y procesar datos desde archivos Excel.
+- __Gestión de cálculos para diferentes tipos de instalaciones:__ Cálculos especializados según las necesidades de instalaciones residenciales o terciarias.
+- __Estructura modular:__ Organización del código en módulos bien definidos para facilitar el mantenimiento y escalabilidad del proyecto.
+
+### Funcionalidad
+La aplicación sigue un flujo lógico de operación:
+- Un usuario autenticado accede a la plataforma.
+- Puede optar por introducir datos manualmente o subir un archivo Excel con los datos necesarios.
+- El sistema procesa la información, ejecutando los cálculos correspondientes.
+- Se presentan los resultados en la interfaz, permitiendo su exportación si es necesario.
+- El usuario puede gestionar su historial de cálculos y acceder a reportes generados.
 
 ## Variables de entorno
 El proyecto requiere ciertas variables de entorno para su funcionamiento, estas variables deben estar definidas en un archivo `.env` en la raiz del proyecto.
