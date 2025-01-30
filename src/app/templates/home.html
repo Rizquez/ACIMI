@@ -6,6 +6,17 @@
 
 {% block content %}
 
+<div class="recommendations">
+    <p>
+        <span>Nota importante</span>: Es fundamental respetar tanto el nombre de la tabla como el de las columnas, ya que son esenciales para realizar los cálculos correctamente. 
+        Si estos nombres no se mantienen, la aplicación notificará que no pudo obtener los datos debido a una discrepancia en el nombre de la tabla o de las columnas. 
+        En cambio, el nombre del documento o de la hoja no afecta el proceso y puede modificarse libremente si se desea.
+    </p>
+    <p>
+        <span>Recomendación</span>: Para ingresar datos de cálculo de tipo terciario o residencial, se recomienda utilizar las plantillas disponibles para su descarga.
+    </p>
+</div>
+
 <!-- Formulario unico que contiene todos los campos -->
 <div class="data-project">
     <form id="main-form" action="{{ url_for('submit_data_initial') }}" method="POST" enctype="multipart/form-data">
@@ -33,8 +44,8 @@
 
         <!-- Subida del documento -->
         <label for="fileupload" class="txt-label">Subir documento Excel</label>
-        <label for="fileupload" class="custom-file-upload">Haga clic para subir el archivo con los datos iniciales para el calculo</label>
-        <input type="file" name="fileupload" id="fileupload" class="hide">
+        <label for="fileupload" class="custom-file-upload">Haga clic para subir el archivo (.xlsx) con los datos iniciales para el calculo</label>
+        <input type="file" name="fileupload" id="fileupload" class="hide" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 
         <!-- Contenedor para mostrar el nombre del archivo -->
         <span id="file-name" class="file-name">No se ha seleccionado ningun archivo</span>
@@ -71,5 +82,4 @@
 </div>
 
 <script src="{{url_for('static', filename='scripts/home.js')}}"></script>
-<script src="{{url_for('static', filename='scripts/alerts.js')}}"></script>
 {% endblock %}

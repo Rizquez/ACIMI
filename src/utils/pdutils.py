@@ -5,6 +5,11 @@ import openpyxl.utils
 import openpyxl.worksheet.table
 import openpyxl.worksheet
 import pandas as pd
+from io import BytesIO
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from werkzeug.datastructures import FileStorage
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
 # LIBRERIAS (INTERNAS)
@@ -124,6 +129,123 @@ class PdUtils(pd.DataFrame):
         wb[sheet_name].add_table(table)
         wb = ProcessExcel.adjust_columns(wb, sheet_name)
         wb.save(file)
+
+    @staticmethod
+    def read_table(file: str, table: str) -> 'PdUtils':
+        """
+        Descripcion
+        -----------
+        Lee una tabla especifica de un archivo `Excel` y la convierte en un `DataFrame`.
+
+        Parametros
+        ----------
+        file
+            Ruta absoluta del archivo de `Excel`.
+
+        table
+            Nombre de la tabla que se desea leer.
+
+        Retorna
+        -------
+        - Contenido de la tabla en formato `DataFrame`.
+
+        Lanza
+        -----
+        `FileNotFoundError`
+            Si el archivo de `Excel` especificado no existe.
+
+        `ValueError`
+            Si la tabla especificada no se encuentra en el archivo.
+        """
+        # Controlamos la extraccion de datos desde el documento
+        try: 
+            # Abrimos el documento indicando las configuraciones de lectura que deseamos
+            wb = openpyxl.load_workbook(filename=file, read_only=False, data_only=True)
+            sheet_with_table = None
+            tbl = None
+
+            # Ahora vamos a iterar sobre cada hoja del libro
+            for sheetname in wb.sheetnames:
+                sheet = wb[sheetname]
+
+                # Por cada hoja vamos a comprobrar si la tabla que buscamos existe dentro de esta hoja
+                # Ya que pueden haber muchisimas tablas sobre una misma hoja
+                # Y en el caso de obtenerla, extraeremos la tabla y almacenaremos la hoja, rompiendo posteriormente el bucle
+                if table in sheet.tables:
+                    tbl = sheet.tables[table]
+                    sheet_with_table = sheet
+                    break
+            
+            # En caso de nunca conseguirla arrojaremos un error
+            else:
+                raise ValueError(f"La tabla `{table}` no se encontra en el documento `{file}`")
+            
+            # Sobre la tabla obtenida anteriormente, vamos a localizar sus dimensiones
+            # Y sobre las dimensiones, los datos almacenamos
+            tbl_range = tbl.ref
+            data = sheet_with_table[tbl_range]
+
+            # Iterando sobre los datos podremos obtener el valor en cada celda
+            content = [[cell.value for cell in row] for row in data]
+
+            # Del contenido de las celdas separamos el nombre de las columans del valor en cada celda de cada fila e instanciamos el DataFrame
+            header = content[0]
+            rest = content[1:]
+            df = PdUtils(rest, columns=header)
+
+        finally:
+            wb.close()
+        
+        return df
+    
+    @classmethod
+    def validate_xlsx(self, file: 'FileStorage', table: str) -> tuple[bool, str]:
+        """
+        Descripcion
+        -----------
+        Realiza comprobaciones sobre el archivo `Excel` para verificar si cumple con los criterios para poder ser utilizado en la aplicacion.
+
+        Parametros
+        ----------
+        file
+            Archivo `Excel` cargado a la aplicacion a traves de Flask.
+
+        table
+            Nombre de la tabla que se va a buscar dentro del documento `Excel`.
+
+        Retorna 
+        -------
+        - `True` si el archivo es valido o `False` en caso contrario.
+        - Mensaje relacionado con la validacion que finalizo la ejecucion del metodo.
+        """
+        # Vamos a instanciar un diccionario que nos permitira acceder de forma rapida a la verificacion de las columnas de la tabla
+        dct_access = {
+            'Tabla_terciario': Templates.Terciario,
+            'Tabla_residencial': Templates.Residencial
+        }
+
+        # Leemos el archivo Excel en el buffer de memoria
+        file_buffer = BytesIO(file.read())
+        file_buffer.seek(0)
+
+        # Controlaremos la lectura de los datos sobre el documento, ya que es lo primero a validar, que exista la tabla
+        try:
+            df = self.read_table(file_buffer, table)
+
+            # Verificamos si la tabla contiene datos
+            if df.empty:
+                return False, f'El documento `{file.filename}` no contiene datos en la tabla `{table}` 🔍'
+
+            # Verificamos si todas las columnas existen
+            if not set(Templates.obtain_keys_template(dct_access[table])).issubset(df.columns):
+                return False, f'La tabla `{table}` no contiene todas las columnas necesarias para el calculo, por favor utilice la plantilla 🧐'
+
+        # Si no se existe la tabla, lo indicaremos
+        except ValueError:
+            return False, f'La tabla `{table}` no existe dentro del documento `{file.filename}` 🔍'
+            
+        # Si todas las comprobaciones son correctas, retornamos un simple true y un ok
+        return True, 'Ok'
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 # FIN DEL FICHERO

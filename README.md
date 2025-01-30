@@ -1,4 +1,4 @@
-# ACIMI - v0.0.0
+# ACIMI - v0.0.1
 
 ## Contexto
 En el campo de la ingeniería mecánica aplicada a edificaciones, el cálculo de instalaciones mecánicas para uso residencial y terciario es una tarea esencial que involucra múltiples factores técnicos. La automatización de estos cálculos reduce errores, mejora la eficiencia y optimiza el tiempo de los profesionales del sector.

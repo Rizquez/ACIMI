@@ -1,5 +1,22 @@
 /*------------------------------------------------------------- INICIO DEL FICHERO --------------------------------------------------------------*/
 
+.recommendations {
+    display: flex;
+    flex-direction: column;
+    max-width: 95%;
+    margin: 0 auto;
+}
+
+.recommendations p {
+    color: var(--text-100);
+    font-size: medium;
+    text-align: justify;
+}
+
+.recommendations span {
+    text-decoration: underline;
+}
+
 .data-project {
     display: flex;
     flex-direction: column;

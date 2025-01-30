@@ -6,21 +6,36 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="icon web" href="{{ url_for('static', filename='images/favicon.ico') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"/>
-        {% block head_extra %}
-        {% endblock %}
-        <title>{% block title %}{% endblock %}</title>
+        {% block head_extra %} {% endblock %}
+        <title>{% block title %} {% endblock %}</title>
     </head>
     <body {% block body_attributes %}{% endblock %}>
-        <header>
-            <img src="{{url_for('static', filename='images/engineering_team.png')}}" alt="Logo equipo de ingenieria">
-            <div class="templates">
-                <span class="template" tipo="terciario">Plantilla (calculo terciario)</span>
-                <span class="template" tipo="residencial">Plantilla (calculo residencial)</span>
-            </div>
-        </header>
+        {% block header %}
+            <header>
+                <img src="{{url_for('static', filename='images/engineering_team.png')}}" alt="Logo equipo de ingenieria">
+                <div class="templates">
+                    <span class="template" tipo="terciario">Plantilla (calculo terciario)</span>
+                    <span class="template" tipo="residencial">Plantilla (calculo residencial)</span>
+                </div>
+            </header>
+        {% endblock header %}
         {% block content %} {% endblock %}
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <script>
+                    // Convirtamos el array de mensajes en una variable global de JavaScript
+                    // De esta manera todos los documentos html que extiendan de este tendran esta logica implementada
+                    window.flaskMessages = "{{ messages[0] }}"
+                </script>
+            {% endif %}
+        {% endwith %}
     </body>
-    <footer>
-        <p>© ACIMI 2025. Todos los derechos reservados.</p>
-    </footer>
+    {% block footer %}
+        <footer>
+            <p>© ACIMI 2025. Todos los derechos reservados.</p>
+        </footer>
+    {% endblock footer %}
+    <script src="{{ url_for('static', filename='scripts/alerts.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/utils.js') }}"></script>
 </html>

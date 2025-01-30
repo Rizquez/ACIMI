@@ -2,7 +2,7 @@
 # IMPORTACION DE LOS METODOS Y CLASES DE LOS MODULOS
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
-from .constants import ACIMI_VERSION, FOLDER_ROOT, STYLE_EXCEL
+from .constants import ACIMI_VERSION, FOLDER_ROOT, FOLDER_TEMP_UPLOAD, FOLDER_TEMP_DOWNLOAD, STYLE_EXCEL
 from .keys import Templates
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
