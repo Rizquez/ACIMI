@@ -7,7 +7,7 @@
  */
 function showAlert(msg) {
     const alertBox = document.getElementById("customized-alert")
-    const alertText = document.getElementById("text-alert")
+    const alertText = document.getElementById("txt-alert")
     alertText.textContent = msg
     alertBox.style.display = 'block'
 

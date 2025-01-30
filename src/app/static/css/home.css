@@ -19,6 +19,7 @@
     box-sizing: border-box;
     padding: 20px;
     width: 50%;
+    background-color: var(--bg-200);
 }
 
 .data-project form input[type="file"],
@@ -69,6 +70,12 @@
     font-size: smaller;
     color: var(--text-100);
     text-align: right;
+}
+
+.txt-label {
+    font-size: medium;
+    margin: 0px 0px 5px 12px;
+    display: block;
 }
 
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/
