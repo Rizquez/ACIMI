@@ -92,9 +92,10 @@ def submit_data_initial():
     zonas_sobrepresion = request.form.get('zonas_sobrepresionar') if calculotipo == 'terciario' else None
 
     # Manejamos archivo Excel si existe y lo almacenamos en el directorio temporal
+    # Debemos controlar la posibilidad de que los usuarios envien un tipo de documento que no sea un Excel o no tenga la estructura esperada
+    # para ellos sobre el documento enviado a traves del formulario vamos a realizar una serie de validaciones antes de ir a los calculos
     file = request.files.get('fileupload')
-    if file:
-        file.save(os.path.join(FOLDER_TEMP, f'upload_{file.filename}'))
+    file.save(os.path.join(FOLDER_TEMP, f'upload_{file.filename}'))
 
     return render_template('terciario.html') if calculotipo == 'terciario' else render_template('residencial.html')
 
