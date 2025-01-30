@@ -1,7 +1,7 @@
 /*------------------------------------------------------------- INICIO DEL FICHERO --------------------------------------------------------------*/
 
 /**
- * @file utils.js
+ * @file home.js
  * @description Maneja la visibilidad del formulario terciario y restringe la entrada de numeros enteros mayor o igual a 0.
  */
 document.addEventListener("DOMContentLoaded", function () {
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 /**
- * @file utils.js
+ * @file home.js
  * @description Maneja la descarga de las plantillas al hacer clic en los elementos correspondientes evitando la recarga de la pagina.
  * @param {string} tipo - Tipo de plantilla a descargar ('terciario' o 'residencial').
  */
@@ -95,17 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /**
- * @file utils.js
+ * @file home.js
  * @description Maneja la etiqueta `required` sobre los input del formulario que se activan unicamente para el calculo terciario.
  */
 document.getElementById("calculotipo").addEventListener("change", function() {
-    let formTerciario = document.getElementById("form-terciario")
-    let isTerciario = this.value === "terciario"
+    var formTerciario = document.getElementById("form-terciario")
+    var isTerciario = this.value === "terciario"
 
     formTerciario.classList.toggle("hide", !isTerciario)
 
     // Obtener los campos dentro del formulario terciario
-    let fields = formTerciario.querySelectorAll("input, select")
+    var fields = formTerciario.querySelectorAll("input, select")
     
     // Agregar o quitar required dependiendo de si es visible
     fields.forEach(field => {
@@ -116,5 +116,33 @@ document.getElementById("calculotipo").addEventListener("change", function() {
         }
     })
 })
+
+/**
+ * @file home.js
+ * @description Maneja la validacion del formulario antes de enviarlo, previene el envio si no se ha seleccionado un archivo.
+ */
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("main-form")
+    form.addEventListener("submit", function(event) {
+        if (!validateForm()) {
+            event.preventDefault() // Evita el envio del formulario
+        }
+    })
+})
+
+/**
+ * @file home.js
+ * @description Valida que se haya seleccionado un archivo antes de enviar el formulario.
+ * @param {Event} event - El evento de envío del formulario.
+ * @returns {boolean} - Retorna `true` si la validacion es exitosa, `false` si falla.
+ */
+function validateForm() {
+    const fileInput = document.getElementById("fileupload")
+    if (fileInput.files.length === 0) {
+        showAlert("Debe subir el documento excel base con los datos de entrada antes de enviar el formulario 📑")
+        return false
+    }
+    return true
+}
 
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/

@@ -24,7 +24,7 @@
 
         <!-- Subida del documento -->
         <label for="fileupload" class="custom-file-upload">Haga clic para subir el archivo con los datos iniciales para el calculo</label>
-        <input type="file" name="fileupload" id="fileupload" class="hide" required>
+        <input type="file" name="fileupload" id="fileupload" class="hide">
 
         <!-- Contenedor para mostrar el nombre del archivo -->
         <span id="file-name" class="file-name">No se ha seleccionado ningun archivo</span>
@@ -32,15 +32,15 @@
         <!-- Formulario adicional para "terciario", oculto inicialmente -->
         <div id="form-terciario" class="hide">
             <h2>Informacion adicional para el calculo terciario</h2>
-            <select name="ida" id="ida" required>
+            <select name="ida" id="ida">
                 <option value="" disabled selected>IDA</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
             </select>
-            <input type="number" name="plantas_parking" placeholder="Plantas de parking" required>
-            <input type="number" name="zonas_sobrepresionar" placeholder="Zonas a sobrepresionar" required>
+            <input type="number" name="plantas_parking" placeholder="Plantas de parking">
+            <input type="number" name="zonas_sobrepresionar" placeholder="Zonas a sobrepresionar">
         </div>
 
         <!-- Boton unico de envio de datos -->
@@ -48,5 +48,12 @@
     </form>
 </div>
 
-<script src="{{url_for('static', filename='scripts/utils.js')}}"></script>
+<!-- Alerta global -->
+<div id="customized-alert" class="hidden-alert">
+    <p id="text-alert"></p>
+    <button id="btn-ok-alert" onclick="closeAlert()">Ok</button>
+</div>
+
+<script src="{{url_for('static', filename='scripts/home.js')}}"></script>
+<script src="{{url_for('static', filename='scripts/alerts.js')}}"></script>
 {% endblock %}

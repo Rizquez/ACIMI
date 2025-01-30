@@ -1,0 +1,33 @@
+/*------------------------------------------------------------- INICIO DEL FICHERO --------------------------------------------------------------*/
+
+.hidden-alert {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--primary-300);
+    border: 3px solid var(--accent-200);
+    border-radius: 30px;
+    padding: 10px;
+    z-index: 1000;
+    text-align: center;
+    color: var(--text-200);
+    font-size: x-large;
+}
+
+#text-alert {
+    margin-bottom: 15px;
+}
+
+#btn-ok-alert {
+    background-color: var(--accent-200);
+    color: var(--text-100);
+    padding: 10px 35px;
+    border: none;
+    cursor: pointer;
+    border-radius: 30px;
+    text-decoration: none;
+}
+
+/*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/
