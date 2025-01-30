@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}
+    ACIMI - Home
+{% endblock %}
+
+{% block content %}
+
+<!-- Formulario unico que contiene todos los campos -->
+<div class="data-project">
+    <form id="main-form" action="{{ url_for('submit_data_initial') }}" method="POST" enctype="multipart/form-data">
+
+        <!-- Datos generales -->
+        <h1>Datos del proyecto</h1>
+        <input type="text" placeholder="Num. Referencia" required>
+        <input type="text" placeholder="Nombre del proyecto" required>
+        <input type="text" placeholder="Propiedad" required>
+        <input type="text" placeholder="Autor" required>
+        <select name="calculotipo" id="calculotipo" required>
+            <option value="" disabled selected>Calculo tipo</option>
+            <option value="terciario">Terciario</option>
+            <option value="residencial">Residencial</option>
+        </select>
+
+        <!-- Subida del documento -->
+        <label for="fileupload" class="custom-file-upload">Haga clic para subir el archivo con los datos iniciales para el calculo</label>
+        <input type="file" name="fileupload" id="fileupload" class="hide">
+
+        <!-- Contenedor para mostrar el nombre del archivo -->
+        <span id="file-name" class="file-name">No se ha seleccionado ningun archivo</span>
+
+        <!-- Formulario adicional para "terciario", oculto inicialmente -->
+        <div id="form-terciario" class="hide">
+            <h2>Informacion adicional para el calculo terciario</h2>
+            <select name="ida" id="ida">
+                <option value="" disabled selected>IDA</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+            <input type="number" name="plantas_parking" placeholder="Plantas de parking">
+            <input type="number" name="zonas_sobrepresionar" placeholder="Zonas a sobrepresionar">
+        </div>
+
+        <!-- Boton unico de envio de datos -->
+        <button type="submit">Enviar datos</button>
+    </form>
+</div>
+
+<!-- Alerta global -->
+<div id="customized-alert" class="hidden-alert">
+    <p id="text-alert"></p>
+    <button id="btn-ok-alert" onclick="closeAlert()">Ok</button>
+</div>
+
+<script src="{{url_for('static', filename='scripts/home.js')}}"></script>
+<script src="{{url_for('static', filename='scripts/alerts.js')}}"></script>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" {% block html_attributes %}{% endblock %}>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="icon web" href="{{ url_for('static', filename='images/favicon.ico') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"/>
+        {% block head_extra %}
+        {% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body {% block body_attributes %}{% endblock %}>
+        <header>
+            <img src="{{url_for('static', filename='images/engineering_team.png')}}" alt="Logo equipo de ingenieria">
+            <div class="templates">
+                <span class="template" tipo="terciario">Plantilla (calculo terciario)</span>
+                <span class="template" tipo="residencial">Plantilla (calculo residencial)</span>
+            </div>
+        </header>
+        {% block content %} {% endblock %}
+    </body>
+    <footer>
+        <p>© ACIMI 2025. Todos los derechos reservados.</p>
+    </footer>
+</html>

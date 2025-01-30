@@ -1,0 +1,63 @@
+/*------------------------------------------------------------- INICIO DEL FICHERO --------------------------------------------------------------*/
+
+:root {
+    --primary-100:#2C3E50;
+    --primary-200:#57687c;
+    --primary-300:#b4c7dd;
+    --accent-100:#F7CAC9;
+    --accent-200:#926b6a;
+    --text-100:#333333;
+    --text-200:#5c5c5c;
+    --bg-100:#F2F2F2;
+    --bg-200:#e8e8e8;
+    --bg-300:#bfbfbf;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 1920px;
+    background-color: var(--bg-200);
+}
+
+footer {
+    margin-top: 60px;
+    text-align: center;
+}
+
+footer p {
+    color: var(--text-200);
+}
+
+header {
+    padding: 30px 40px 0px 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+header img {
+    width: 15%;
+    height: auto;
+}
+
+header .templates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 15px;
+    gap: 20px;
+}
+
+header .template {
+    cursor: pointer;
+    color: var(--text-100);
+}
+
+header .template:hover {
+    color: var(--accent-200);
+}
+
+/*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/
