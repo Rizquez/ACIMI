@@ -2,6 +2,7 @@
 # LIBRERIAS (EXTERNAS)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 import os
+from io import BytesIO
 from flask import Flask, render_template, redirect, send_file, request, flash
 from dotenv import load_dotenv
 load_dotenv(override=False)
@@ -11,6 +12,14 @@ load_dotenv(override=False)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 from src.support import FOLDER_TEMP_DOWNLOAD, FOLDER_TEMP_UPLOAD
 from src.utils import PdUtils
+# -------------------------------------------------------------------------------------------------------------------------------------------------
+
+# REFERENCIA AL FICHERO LOG (INFO/WARNING/ERROR)
+# -------------------------------------------------------------------------------------------------------------------------------------------------
+# Se referencian aqui!
+# -------------------------------------------------------------------------------------------------------------------------------------------------
+
+# CREACION DE LA(S) CLASE(S) / FUNCIONES GENERALES
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Instanciamos la app de Flask
@@ -41,8 +50,8 @@ def download_template(tipo):
     """
     Descripcion
     -----------
-    Ruta para realizar la descarga de las plantillas de `Excel` para realizar los calculos, estas plantillas poseen el mismo formato que se 
-    espera tengan los fichero que se recibiran para el calculo.
+    Ruta para realizar la descarga de las plantillas de `Excel` para realizar los calculos, estas plantillas poseen 
+    el mismo formato que se espera tengan los fichero que se recibiran para el calculo.
 
     Parametros
     ----------
@@ -63,7 +72,9 @@ def download_template(tipo):
     df = PdUtils.template_xlsx(tipo)
     df.save_excel(filepath, f'Tabla_{tipo}', f'Hoja_{tipo}', 'w', '%.2f')
 
-    return send_file(filepath, as_attachment=True, download_name=filename, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    return send_file(
+        filepath, as_attachment=True, download_name=filename, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 @app.route('/submit_data_initial', methods=['GET', 'POST'])
 def submit_data_initial():
@@ -81,8 +92,10 @@ def submit_data_initial():
     - Renderizado de `terciario.html` o `residencial.html` en funcion del tipo de calculo solicitado.
     """
     # Controlamos el acceso directo a esta ruta y redireccionamos a la raiz
+    # Solo mostramos el mensaje si NO viene de un formulario valido
     if request.method == 'GET':
-        flash("No es posible acceder directamente a la ruta a la que he intentado ingresar, debe completar primero el formulario ⛔")
+        if not request.referrer or ('/submit_data_initial' not in request.referrer and '/' not in request.referrer):
+            flash("No es posible acceder directamente a la ruta a la que he intentado ingresar, debe completar primero el formulario ⛔")
         return redirect('/')
     
     # Capturamos los datos del formulario
@@ -97,18 +110,38 @@ def submit_data_initial():
     plantas_parking = request.form.get('plantas_parking') if calculotipo == 'terciario' else None
     zonas_sobrepresionar = request.form.get('zonas_sobrepresionar') if calculotipo == 'terciario' else None
 
-    # Debemos controlar la posibilidad de que los usuarios envien un documento que no tenga la estructura esperada, para ello, sobre el documento 
-    # enviado a traves del formulario vamos a realizar una serie de validaciones antes de ir a los calculos
-    # El front ya se encarga de aceptar unicamente fichero .xlsx, ahora comprobaremos si existe la tabla y las columnas en funcion del tipo de 
-    # calculo que se quiera realizar
+    # Extraemos el documento Excel enviado en el formulario
     file = request.files.get('fileupload')
-    isValid, msgValid = PdUtils.validate_xlsx(file, f'Tabla_{calculotipo}')
+
+    # Leemos el archivo Excel en el buffer de la memoria de la aplicacion
+    buffer_file = BytesIO(file.read())
+
+    # Reiniciamos el puntero al inicio del archivo para poder reutilizarlo
+    buffer_file.seek(0)
+
+    # Capturamos el nombre del archivo para facilidad de envio de mensajes al usuario
+    file_name = file.filename
+    
+    # Debemos controlar la posibilidad de que los usuarios envien un documento que no tenga la estructura esperada, para ello, 
+    # sobre el documento enviado a traves del formulario vamos a realizar una serie de validaciones antes de ir a los calculos
+    # El front ya se encarga de aceptar unicamente fichero .xlsx, ahora comprobaremos si existe la tabla y las columnas en funcion 
+    # del tipo de calculo que se quiera realizar
+    isValid, msgValid = PdUtils.validate_xlsx(buffer_file, file_name, f'Tabla_{calculotipo}')
+
+    # Reiniciamos el puntero nuevamente tras la validacion
+    buffer_file.seek(0)
 
     # Si los datos son validos, almacenamos el documento en el directorio temporal de cargas y redireccionamos al html correspondiente 
     # haciendo envio de los datos necesario segun cada html
     if isValid:
-        file.save(os.path.join(FOLDER_TEMP_UPLOAD, file.filename))
-        return render_template('terciario.html') if calculotipo == 'terciario' else render_template('residencial.html')
+        dct_data = PdUtils.read_table(buffer_file, file_name, f'Tabla_{calculotipo}').to_dict(orient='list')
+        lst_plantas = list(sorted(set(dct_data['planta'])))
+        lst_espacios = list(sorted(set(dct_data['espacio'])))
+
+        if calculotipo == 'terciario':
+            return render_template('terciario.html', dct_data=dct_data, plantas=lst_plantas, espacios=lst_espacios)
+        else:
+            return render_template('residencial.html')
     
     # En caso contrario, enviamos el mensaje obtenido de la validacion al front
     else:
@@ -151,5 +184,5 @@ def error():
     return render_template('error.html')
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
-# FIN DEL FICHERO
+# FIN DEL FICHERO :)
 # -------------------------------------------------------------------------------------------------------------------------------------------------

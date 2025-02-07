@@ -5,5 +5,142 @@
 {% endblock %}
 
 {% block content %}
-<h1>Hola!! Pronto haremos los calculos de tipo terciario 😉</h1>
+<section class="terciario">
+
+    {% if dct_data %}
+    <div class="tablas plantas">
+        <div>
+            <h1>Datos de entrada (Excel)</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Espacio</th>
+                        <th>Planta</th>
+                        <th>Potencia refrigeracion superficie (W/m2)</th>
+                        <th>Potencia total refrigeracion (W)</th>
+                        <th>Potencia calefaccion superficie (W/m2)</th>
+                        <th>Potencia total calefaccion (W)</th>
+                        <th>Superficie (m2)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(dct_data['espacio']|length) %}
+                    <tr>
+                        <!-- Celda NO editable -->
+                        <td>{{ dct_data['espacio'][i] }}</td>
+                        <td>{{ dct_data['planta'][i] }}</td>
+        
+                        <!-- Celdas editables con input -->
+                        <td><input type="number" step="0.01" placeholder="Potencia (W)" value="{{ dct_data['potencia_refrigeracion_superficie_W_m2'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Potencia (W)" value="{{ dct_data['potencia_total_refrigeracion_W'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Potencia (W)" value="{{ dct_data['potencia_calefaccion_superficie_W_m2'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Potencia (W)" value="{{ dct_data['potencia_total_calefaccion_W'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Superficie (m2)" value="{{ dct_data['superficie_m2'][i] }}" required></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>    
+            </table>
+        </div>
+        {% if plantas %}
+        <div>
+            <h1>Cuadro de alturas</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Planta</th>
+                        <th>Altura de planta (m)</th>
+                        <th>Altura libre (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(plantas|length) %}
+                    <tr>
+                        <!-- Celda NO editable -->
+                        <td>{{ plantas[i] }}</td>
+
+                        <!-- Celdas editables con input -->
+                        <td><input type="number" step="0.01" placeholder="Altura (m)" required></td>
+                        <td><input type="number" step="0.01" placeholder="Altura (m)" required></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="tablas espacios">
+        <h1>Ocupacion - Caudal</h1>
+        <div class="tabla-centrada">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Espacio</th>
+                        <th>Planta</th>
+                        <th>Nº Personas</th>
+                        <th>Caudal (m3/h)</th>
+                        <th>Tipo local</th>
+                        <th>Potencia motor (kW)</th>
+                        <th>Potencia motor (HP)</th>
+                        <th>Diametro tubo de escape (mm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(dct_data['espacio']|length) %}
+                    <tr data-index="{{ i }}">
+                        <!-- Celda NO editable -->
+                        <td>{{ dct_data['espacio'][i] }}</td>
+                        <td>{{ dct_data['planta'][i] }}</td>
+    
+                        <!-- Celdas editables con input -->
+                        <td><input type="number" step="1" placeholder="Nº Personas" id="n_personas" required></td>
+                        <td><input type="number" step="0.01" placeholder="Caudal (m3/h)" required></td>
+                        <td>
+                            <select name="tipolocal" id="tipolocal">
+                                <option value="" disabled selected>Seleccione</option>
+                                <option value="10" id="lavanderias">Lavanderias</option>
+                                <option value="6" id="vestuarios">Vestuarios</option>
+                                <option value="5" id="almacences">Almacences</option>
+                                <option value="10" id="sala_maquinas">Salas de maquinas</option>
+                                <option value="4" id="talleres_montaje">Talleres de montaje</option>
+                                <option value="10" id="aseos">Aseos</option>
+                                <option value="10" id="sala_residuos">Salas de residuos</option>
+                                <option value="6" id="sala_cuadros">Salas de cuadro</option>
+                                <option value="2" id="sala_servidores">Salas de servidores</option>
+                                <option value="0" id="sala_pci">Sala de PCI Diesel</option>
+                            </select>
+                        </td>
+                        <td><input type="number" step="0.01" id="potencia_kw"></td>
+                        <td><input type="number" step="0.01" id="potencia_hp"></td>
+                        <td><input type="number" step="0.01" id="diametro_mm"></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tablas agrupacion">
+        <h1>Agrupacion por equipos mecanicos</h1>
+        <div class="tabla-centrada">
+            <!-- Tabla dinamica para mostrar solo las filas con seleccion en tipolocal -->
+            <table id="dynamicTable">
+                <thead>
+                    <tr>
+                        <th>Espacio</th>
+                        <th>Planta</th>
+                        <th>Caudal (m3/h)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Las filas se agregaran dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% endif %}
+</section>
+
+<script src="{{url_for('static', filename='scripts/terciario.js')}}"></script>
 {% endblock %}

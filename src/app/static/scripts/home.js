@@ -7,7 +7,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     /**
-     * @description Elementos del DOM necesarios para la manipulacion del formulario
+     * @description Elementos del DOM necesarios para la manipulacion del formulario.
      */
     const tipoCalculoElement = document.getElementById("calculotipo")
     const formTerciario = document.getElementById("form-terciario")
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(error => {
             console.error("Error en la validación del archivo:", error);
-            showAlert("Hubo un problema al validar el archivo. Intente nuevamente. ❌");
+            showAlert("Hubo un problema al validar el archivo. Intente nuevamente ❌");
             return false;
         });
     }
