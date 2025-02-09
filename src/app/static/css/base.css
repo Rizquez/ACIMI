@@ -24,7 +24,7 @@ body {
 }
 
 footer {
-    margin-top: 60px;
+    margin: 60px 0px 30px 0px;
     text-align: center;
 }
 
@@ -58,6 +58,30 @@ header .template {
 
 header .template:hover {
     color: var(--accent-200);
+}
+
+/* Chrome, Safari, Edge y Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.recommendations {
+    display: flex;
+    flex-direction: column;
+    max-width: 95%;
+    margin: 0 auto;
+}
+
+.recommendations p {
+    color: var(--text-100);
+    font-size: medium;
+    text-align: justify;
+}
+
+.recommendations span {
+    text-decoration: underline;
 }
 
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/

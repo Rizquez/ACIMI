@@ -7,7 +7,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     /**
-     * Elementos del DOM necesarios para la manipulacion del formulario
+     * @description Elementos del DOM necesarios para la manipulacion del formulario.
      */
     const tipoCalculoElement = document.getElementById("calculotipo")
     const formTerciario = document.getElementById("form-terciario")
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("main-form")
     
     /**
-     * Maneja la visibilidad del formulario terciario y el atributo 'required'.
+     * @description Maneja la visibilidad del formulario terciario y el atributo 'required'. 
      * Se activa cuando el usuario selecciona "terciario" en el menu desplegable.
      */
     tipoCalculoElement.addEventListener("change", function () {
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     /**
-     * Aplica restricciones en los campos de numero para aceptar solo enteros positivos.
+     * @description Aplica restricciones en los campos de numero para aceptar solo enteros positivos.
      */
     inputNumberFields.forEach(input => {
         input.addEventListener("input", restrictToPositiveIntegers)
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     /**
-     * Restringe la entrada de caracteres en los campos numericos a valores enteros positivos.
+     * @description Restringe la entrada de caracteres en los campos numericos a valores enteros positivos.
      * @param {Event} event - Evento de entrada en el campo de texto.
      */
     function restrictToPositiveIntegers(event) {
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Previene la entrada de caracteres no numericos en los campos de numeros.
+     * @description Previene la entrada de caracteres no numericos en los campos de numeros.
      * @param {KeyboardEvent} event - Evento de teclado.
      */
     function preventNonNumericInput(event) {
@@ -57,16 +57,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Muestra el nombre del archivo seleccionado para cargar.
+     * @description Controla que el archivo a cargar sea un archivo Excel en el formato permitido y muestra el nombre del archivo en el 
+     * formulario. Arrojando una alerta en caso de enviar un tipo de archivo no permitido.
      */
     fileInput.addEventListener("change", function () {
-        fileNameDisplay.textContent = fileInput.files.length > 0 
-            ? "Archivo seleccionado: " + fileInput.files[0].name 
-            : "No se ha seleccionado ningun archivo"
-    })
+        const file = fileInput.files[0];
+        if (file) {
+            const fileName = file.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+    
+            if (fileExtension !== "xlsx") {
+                showAlert("El archivo seleccionado no es un documento Excel válido (.xlsx) ❌");
+                fileInput.value = "" // Resetea el input
+                fileNameDisplay.textContent = "No se ha seleccionado ningun archivo";
+            } else {
+                fileNameDisplay.textContent = "Archivo seleccionado: " + fileName;
+            }
+        }
+    })   
 
     /**
-     * Maneja la validacion antes del envio del formulario.
+     * @description Maneja la validacion antes del envio del formulario.
      * Previene el envio si no se ha seleccionado un archivo.
      */
     form.addEventListener("submit", function (event) {
@@ -76,19 +87,41 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     /**
-     * Valida que se haya seleccionado un archivo antes de enviar el formulario.
+     * @description Valida que se haya seleccionado un archivo antes de enviar el formulario.
      * @returns {boolean} - Retorna `true` si el archivo esta seleccionado, `false` si falta.
      */
     function validateFileSelection() {
         if (fileInput.files.length === 0) {
-            showAlert("Debe subir el documento Excel base con los datos de entrada antes de enviar el formulario 📑")
-            return false
+            showAlert("Debe subir el documento Excel base con los datos de entrada antes de enviar el formulario 📑");
+            return false;
         }
-        return true
+    
+        // Crear objeto FormData para enviar solo el archivo al backend y validarlo antes de enviarlo completo
+        let formData = new FormData();
+        formData.append("fileupload", fileInput.files[0]);
+    
+        // Enviar la validación al servidor antes de procesar el formulario
+        return fetch("/submit_data_initial", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                showAlert(data.message); // Mostrar alerta si hay error en backend
+                return false;
+            }
+            return true; // Si todo está correcto, permitir el envío
+        })
+        .catch(error => {
+            console.error("Error en la validación del archivo:", error);
+            showAlert("Hubo un problema al validar el archivo. Intente nuevamente ❌");
+            return false;
+        });
     }
-
+    
     /**
-     * Maneja la descarga de plantillas segun el tipo seleccionado.
+     * @description Maneja la descarga de plantillas segun el tipo seleccionado.
      */
     document.querySelectorAll(".template").forEach(element => {
         element.addEventListener("click", function () {
@@ -98,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     /**
-     * Descarga una plantilla de calculo basada en el tipo seleccionado.
+     * @description Descarga una plantilla de calculo basada en el tipo seleccionado.
      * @param {string} tipo - Tipo de plantilla a descargar ("terciario" o "residencial").
      */
     function downloadTemplate(tipo) {
