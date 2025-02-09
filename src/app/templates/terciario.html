@@ -11,7 +11,7 @@
     <div class="tablas plantas">
         <div>
             <h1>Datos de entrada (Excel)</h1>
-            <table>
+            <table id="inputsTable">
                 <thead>
                     <tr>
                         <th>Espacio</th>
@@ -41,10 +41,11 @@
                 </tbody>    
             </table>
         </div>
-        {% if plantas %}
+
+        {% if lst_plantas %}
         <div>
             <h1>Cuadro de alturas</h1>
-            <table>
+            <table id="heightsTable">
                 <thead>
                     <tr>
                         <th>Planta</th>
@@ -53,10 +54,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in range(plantas|length) %}
+                    {% for i in range(lst_plantas|length) %}
                     <tr>
                         <!-- Celda NO editable -->
-                        <td>{{ plantas[i] }}</td>
+                        <td>{{ lst_plantas[i] }}</td>
 
                         <!-- Celdas editables con input -->
                         <td><input type="number" step="0.01" placeholder="Altura (m)" required></td>
@@ -70,7 +71,7 @@
     </div>
 
     <div class="tablas espacios">
-        <h1>Ocupacion - Caudal</h1>
+        <h1>Ocupacion & Caudal (Locales)</h1>
         <div class="tabla-centrada">
             <table>
                 <thead>
@@ -98,16 +99,16 @@
                         <td>
                             <select name="tipolocal" id="tipolocal">
                                 <option value="" disabled selected>Seleccione</option>
-                                <option value="10" id="lavanderias">Lavanderias</option>
-                                <option value="6" id="vestuarios">Vestuarios</option>
                                 <option value="5" id="almacences">Almacences</option>
-                                <option value="10" id="sala_maquinas">Salas de maquinas</option>
-                                <option value="4" id="talleres_montaje">Talleres de montaje</option>
                                 <option value="10" id="aseos">Aseos</option>
-                                <option value="10" id="sala_residuos">Salas de residuos</option>
+                                <option value="10" id="lavanderias">Lavanderias</option>
                                 <option value="6" id="sala_cuadros">Salas de cuadro</option>
-                                <option value="2" id="sala_servidores">Salas de servidores</option>
+                                <option value="10" id="sala_maquinas">Salas de maquinas</option>
                                 <option value="0" id="sala_pci">Sala de PCI Diesel</option>
+                                <option value="10" id="sala_residuos">Salas de residuos</option>
+                                <option value="2" id="sala_servidores">Salas de servidores</option>
+                                <option value="4" id="talleres_montaje">Talleres de montaje</option>
+                                <option value="6" id="vestuarios">Vestuarios</option>
                             </select>
                         </td>
                         <td><input type="number" step="0.01" id="potencia_kw"></td>
@@ -121,7 +122,7 @@
     </div>
 
     <div class="tablas agrupacion">
-        <h1>Agrupacion por equipos mecanicos</h1>
+        <h1>Agrupacion de locales por equipos mecanicos</h1>
         <div class="tabla-centrada">
             <!-- Tabla dinamica para mostrar solo las filas con seleccion en tipolocal -->
             <table id="dynamicTable">
@@ -137,6 +138,32 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <div class="tablas parking">
+        {% if dct_zonas.parking > 0 %}
+            <h1>Aparcamiento (Datos previos)</h1>
+            <div class="tabla-centrada">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ubicacion</th>
+                            <th>Coches (plazas)</th>
+                            <th>Motos (plazas)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(dct_zonas['parking']) %}
+                        <tr>
+                            <td><input type="text" placeholder="Planta"></td>
+                            <td><input type="number" placeholder="Nº Plazas" id="plazas_coches"></td>
+                            <td><input type="number" placeholder="Nº Plazas" id="plazas_motos"></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
     </div>
 
     {% endif %}

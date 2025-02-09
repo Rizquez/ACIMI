@@ -2,148 +2,156 @@
 
 /**
  * @file terciario.js
- * @description
+ * @description Maneja la logica del formulario principal y validaciones en la entrada de datos.
  */
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    /**
-     * @description Elementos del DOM necesarios para la manipulacion del formulario.
-     */
+    // Asignamos listeners a los inputs numericos
     const numericInputs = document.querySelectorAll("table input[type='number']")
+    numericInputs.forEach(addNumericInputListeners)
+  
+    // Asignamos listeners a los selects con id tipolocal
     const tipolocalSelects = document.querySelectorAll("select#tipolocal")
+    tipolocalSelects.forEach(select => {
+        const row = select.closest("tr")
+        const rowIndex = row.getAttribute("data-index")
+    
+        // Seleccionamos los inputs de potencia y diametro (pueden no existir)
+        const potencia_kw = row.querySelector("input#potencia_kw")
+        const potencia_hp = row.querySelector("input#potencia_hp")
+        const diametro_mm = row.querySelector("input#diametro_mm")
+    
+        // Inicialmente, deshabilitamos y quitamos la obligatoriedad de estos inputs
+        setInputState(potencia_kw, false, "")
+        setInputState(potencia_hp, false, "")
+        setInputState(diametro_mm, false, "")
+    
+        // Listener para el evento change del select
+        select.addEventListener("change", () => {
 
+            // Obtenemos la opcion seleccionada
+            const selectedOption = select.options[select.selectedIndex]
+            const isSalaPci = selectedOption && selectedOption.id === "sala_pci"
+    
+            // Si es sala_pci, habilitamos los inputs y asignamos placeholder y required
+            setInputState(potencia_kw, isSalaPci, "Potencia (kW)")
+            setInputState(potencia_hp, isSalaPci, "Potencia (HP)")
+            setInputState(diametro_mm, isSalaPci, "Diametro (mm)")
+    
+            // Actualizamos (o eliminamos) la fila en la tabla dinamica segun el valor seleccionado
+            updateDynamicRow(select, row, rowIndex)
+        })
+    })
+  
     /**
-     * @description
+     * Agrega los listeners necesarios a un input numerico para evitar caracteres o valores no deseados.
+     * @param {HTMLInputElement} input 
      */
-    numericInputs.forEach(input => {
+    function addNumericInputListeners(input) {
 
-        // Evento para evitar numeros negativos
+        // Evita que se ingresen numeros negativos (quita el "-" si se pega o se ingresa)
         input.addEventListener("input", function () {
-            let value = this.value
-
-            // Impedimos numeros negativos eliminando el "-"
-            if (value.startsWith("-")) {
-                value = value.replace("-", "") 
+            if (this.value.startsWith("-")) {
+                this.value = this.value.replace("-", "")
             }
         })
-
-        // Evento para evitar que el usuario ingrese un "-" o un "." directamente
+  
+        // Evita que se ingrese "-" o "." desde el teclado
         input.addEventListener("keydown", function (event) {
             if (event.key === "-" || event.key === ".") {
                 event.preventDefault()
             }
+
+            // Si el id es "n_personas", tambien evitamos la coma
+            if ((input.id === "n_personas" || input.id === "plazas_coches" || input.id === "plazas_motos") && event.key === ",") {
+                event.preventDefault()
+            }
         })
-
-        // Evento para evitar el uso de decimales en el numero de personas
-        if (input.id === "n_personas") {
-            input.addEventListener("keydown", function (event){
-                if (event.key === ",") {
-                    event.preventDefault()
-                }
-            })
-        }
-    })
-
+    }
+  
     /**
-     * @description
+     * Configura el estado (habilitado/deshabilitado, placeholder y required) de un input.
+     * @param {HTMLInputElement} input 
+     * @param {boolean} enable - Si es true, habilita el input y asigna el placeholder de lo contrario, lo deshabilita.
+     * @param {string} placeholder - Texto a asignar como placeholder cuando se habilita.
      */
-    tipolocalSelects.forEach(select => {
+    function setInputState(input, enable, placeholder) {
+        if (!input) return
+        input.disabled = !enable
+        input.required = enable
+        input.placeholder = enable ? placeholder : ""
+    }
+  
+    /**
+     * Actualiza (o elimina) la fila correspondiente en la tabla dinamica (#dynamicTable)
+     * basandose en el valor del select y otros datos obtenidos de la fila actual y las tablas de alturas e inputs.
+     * @param {HTMLSelectElement} select 
+     * @param {HTMLElement} row - Fila (tr) donde se encuentra el select.
+     * @param {string} rowIndex - El atributo data-index de la fila.
+     */
+    function updateDynamicRow(select, row, rowIndex) {
+        const dynamicTableBody = document.querySelector("#dynamicTable tbody")
+        let dynamicRow = dynamicTableBody.querySelector(`tr[data-index="${rowIndex}"]`)
+    
+        // Si se selecciono un valor valido (distinto de "" y "0")
+        if (select.value !== "" && select.value !== "0") {
 
-        // Buscamos la fila <tr> donde se encuentra este select
-        const row = select.closest("tr")
-        const rowIndex = row.getAttribute("data-index");
-
-        // Dentro de esa fila, seleccionamos los inputs correspondientes
-        const potencia_kw = row.querySelector("input#potencia_kw")
-        const potencia_hp = row.querySelector("input#potencia_hp")
-        const diametro_mm = row.querySelector("input#diametro_mm")
-
-        // Inicialmente, deshabilitamos estos inputs (si existen)
-        if (potencia_kw) {
-            potencia_kw.disabled = true
-            potencia_kw.required = false
-        }
-        if (potencia_hp) {
-            potencia_hp.disabled = true
-            potencia_hp.required = false
-        }
-        if (diametro_mm) {
-            diametro_mm.disabled = true
-            diametro_mm.required = false
-        }
-
-        // Añadimos un listener para el evento "change" del select
-        select.addEventListener("change", function () {
-            
-            // Obtenemos los valores de las celdas
+            // Extraemos valores de la fila actual
             const espacioValue = row.querySelector("td:nth-child(1)").textContent.trim()
             const plantaValue = row.querySelector("td:nth-child(2)").textContent.trim()
+    
+            // Buscamos la altura de la planta en la tabla de alturas
+            const heightsTable = document.querySelector("#heightsTable")
+            let alturaPlantaValue = ''
             
-            // Seleccionamos el <tbody> de la tabla dinamica
-            const dynamicTableBody = document.querySelector("#dynamicTable tbody")
+            // Recorremos las filas del tbody de heightsTable
+            heightsTable.querySelectorAll("tbody tr").forEach(tr => {
+                const plantaCell = tr.querySelector("td")
+                if (plantaCell && plantaCell.textContent.trim() === plantaValue) {
+                    const inputs = tr.querySelectorAll("input[type='number']")
+                    if (inputs.length >= 2) {
+                    alturaPlantaValue = inputs[0].value
+                    }
+                }
+            })
 
-            // Buscamos si ya existe una fila para este indice
-            let dynamicRow = dynamicTableBody.querySelector(`tr[data-index="${rowIndex}"]`)
+            // Capturamos la superficie desde la tabla de inputs (inputsTable)
+            const inputsTable = document.querySelector("#inputsTable");
+            let superficieValue = '';
+            inputsTable.querySelectorAll("tbody tr").forEach(tr => {
+                const tds = tr.querySelectorAll("td")
 
-            // Obtenemos la opcion seleccionada (la propiedad id se asigna a cada <option> en el HTML)
-            const selectedOption = select.options[select.selectedIndex]
+                // Se comparan la primera celda (espacio) y segunda celda (planta)
+                if (tds[0].textContent.trim() === espacioValue && tds[1].textContent.trim() === plantaValue) {
 
-            // Si se selecciono la opcion sala_pci, habilitamos los inputs y los marcamos como requeridos
-            // Si se selecciona cualquier otro valor, se deshabilitan y se quita la condicion "required"
-            if (selectedOption && selectedOption.id === "sala_pci") {
-                if (potencia_kw) {
-                    potencia_kw.disabled = false
-                    potencia_kw.required = true
-                    potencia_kw.placeholder = "Potencia (kW)"
+                    // Se asume que la septima celda contiene el input de la superficie
+                    const superficieInput = tds[6].querySelector("input")
+                    if (superficieInput) {
+                        superficieValue = superficieInput.value
+                    }
                 }
-                if (potencia_hp) {
-                    potencia_hp.disabled = false
-                    potencia_hp.required = true
-                    potencia_hp.placeholder = "Potencia (HP)"
-                }
-                if (diametro_mm) {
-                    diametro_mm.disabled = false
-                    diametro_mm.required = true
-                    diametro_mm.placeholder = "Diametro (mm)"
-                }
-            } else {
-                if (potencia_kw) {
-                    potencia_kw.disabled = true
-                    potencia_kw.required = false
-                    potencia_kw.placeholder = ""
-                }
-                if (potencia_hp) {
-                    potencia_hp.disabled = true
-                    potencia_hp.required = false
-                    potencia_hp.placeholder = ""
-                }
-                if (diametro_mm) {
-                    diametro_mm.disabled = true
-                    diametro_mm.required = false
-                    diametro_mm.placeholder = ""
-                }
+            })
+  
+            // Creamos la fila dinamica si no existe
+            if (!dynamicRow) {
+                dynamicRow = document.createElement("tr")
+                dynamicRow.setAttribute("data-index", rowIndex)
+                dynamicTableBody.appendChild(dynamicRow)
             }
-
-            // Si se selecciono un valor valido (diferente de la opcion por defecto)
-            if (select.value !== "" && select.value !== "0") {
-
-                // Si la fila no existe, la creamos
-                if (!dynamicRow) {
-                    dynamicRow = document.createElement("tr")
-                    dynamicRow.setAttribute("data-index", rowIndex)
-                    dynamicTableBody.appendChild(dynamicRow)
-                }
-
-                // Actualizamos el contenido de la fila
-                dynamicRow.innerHTML = `<td>${espacioValue}</td><td>${plantaValue}</td><td>${select.value}</td>`
-            } else {
-                // Si se ha vuelto a la opcion por defecto, eliminamos la fila dinamica si existe
-                if (dynamicRow) {
-                    dynamicRow.remove()
-                }
+  
+            // Calculamos el caudal (nota: se asume que select.value y alturaPlantaValue son numericos)
+            const caudal = select.value * alturaPlantaValue * superficieValue
+            dynamicRow.innerHTML = `
+                <td>${espacioValue}</td>
+                <td>${plantaValue}</td>
+                <td>${caudal}</td>
+            `
+        } else {
+            // Si se vuelve a la opcion por defecto, eliminamos la fila dinamica si existe
+            if (dynamicRow) {
+                dynamicRow.remove()
             }
-        })
-    })
+        }
+    }
 })
-
-/*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/
+/*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/  

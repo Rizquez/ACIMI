@@ -136,10 +136,17 @@ def submit_data_initial():
     if isValid:
         dct_data = PdUtils.read_table(buffer_file, file_name, f'Tabla_{calculotipo}').to_dict(orient='list')
         lst_plantas = list(sorted(set(dct_data['planta'])))
-        lst_espacios = list(sorted(set(dct_data['espacio'])))
 
         if calculotipo == 'terciario':
-            return render_template('terciario.html', dct_data=dct_data, plantas=lst_plantas, espacios=lst_espacios)
+            return render_template(
+                'terciario.html', 
+                dct_data=dct_data, 
+                lst_plantas=lst_plantas,
+                dct_zonas = {
+                    'parking': int(plantas_parking),
+                    'sobrepresion': int(zonas_sobrepresionar)
+                }
+            )
         else:
             return render_template('residencial.html')
     
