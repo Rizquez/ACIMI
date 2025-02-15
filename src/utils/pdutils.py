@@ -5,10 +5,10 @@ import openpyxl.utils
 import openpyxl.worksheet.table
 import openpyxl.worksheet
 import pandas as pd
+from io import BytesIO
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from io import BytesIO
     from werkzeug.datastructures import FileStorage
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -44,8 +44,23 @@ class PdUtils(pd.DataFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    @property
+    def _constructor(self) -> type['PdUtils']:
+        """
+        Summary
+        -------
+        Este metodo es una las formas recomendadas para lograr que las operaciones internas de `pandas` devuelvan una instancia de nuestra 
+        subclase, sobreescribiendo la propiedad `_constructor`. Al hacerlo le indicamos a `pandas` que clase utilizar para construir nuevos 
+        objetos cuando se realicen operaciones sobre un DataFrame.
+
+        Details
+        -------
+        - La documentacion oficial de `pandas` sobre extension de objetos menciona el uso de `_constructor` para mantener el tipo de la subclase.
+        """
+        return PdUtils
+
     @staticmethod
-    def template_xlsx(tipo: str) -> 'PdUtils':
+    def template_excel(tipo: str) -> 'PdUtils':
         """
         Descripcion
         -----------
@@ -73,17 +88,22 @@ class PdUtils(pd.DataFrame):
 
         elif tipo.lower() == 'residencial':
             dct_data = {
-                Templates.Residencial.ESPACIO: [Templates.VALUE_EMPTY],
+                Templates.Residencial.ESCALERA: [Templates.VALUE_EMPTY],
                 Templates.Residencial.PLANTA: [Templates.VALUE_EMPTY],
-                Templates.Residencial.SUPERFICIE: [Templates.ZERO]
+                Templates.Residencial.VIVIENDA: [Templates.VALUE_EMPTY],
+                Templates.Residencial.ESPACIO: [Templates.VALUE_EMPTY],
+                Templates.Residencial.SUPERFICIE_ESPACIO: [Templates.ZERO],
+                Templates.Residencial.LONGITUD_H_PLANTA: [Templates.ZERO],
+                Templates.Residencial.LONGITUD_V_MONTANTE: [Templates.ZERO],
+                Templates.Residencial.LONGITUD_H_CUBIERTA: [Templates.ZERO]
             }
 
         else:
-            raise ValueError(f"El tipo de calculo {tipo} no se encuentra contemplato por el metodo `template_xlsx`")
+            raise ValueError(f"El tipo de calculo {tipo} no se encuentra contemplado por el metodo `template_xlsx`")
         
         return PdUtils(dct_data)
     
-    def save_excel(self, file: str, table_name: str, sheet_name: str, mode: str, float_format: str) -> None:
+    def save_excel(self, table_name: str, sheet_name: str, mode: str, float_format: str) -> BytesIO:
         """
         Descripcion
         -----------
@@ -96,9 +116,6 @@ class PdUtils(pd.DataFrame):
 
         Parametros
         ----------
-        file
-            Ruta del archivo `Excel` donde se creara o actualizara la tabla.
-
         table_name
             Nombre que tendra la tabla en el documento.
 
@@ -120,26 +137,47 @@ class PdUtils(pd.DataFrame):
 
         `ValueError`
             Si los nombres de la tabla, hoja o documento contienen caracteres no validos.
+
+        Returns
+        -------
+        - Archivo `Excel` en binario dentro del buffer de la memoria.
         """
-        # Primero debemos almacenar el DataFrame en un fichero Excel
-        with pd.ExcelWriter(file, mode=mode) as writer:
-            self.to_excel(writer, sheet_name=sheet_name, index=False, float_format=float_format, na_rep=0)
+        try: 
+            # Creamos un buffer para escribir el archivo Excel
+            buffer = BytesIO()
 
-        # Abrimos el fichero excel para poder trabajar sobre el 
-        wb = openpyxl.load_workbook(filename=file)
+            # Primero debemos almacenar el DataFrame en un fichero Excel
+            with pd.ExcelWriter(buffer, mode=mode) as writer:
+                self.to_excel(writer, sheet_name=sheet_name, index=False, float_format=float_format, na_rep=0)
 
-        # Con el DataFrame podemos instanciar y dimensionar la tabla
-        dimension = f'A1:{openpyxl.utils.get_column_letter(self.shape[1])}{len(self)+1}'
-        table = openpyxl.worksheet.table.Table(displayName=table_name, ref=dimension)
-        table.tableStyleInfo = STYLE_EXCEL
+            # Nos aseguramos de mover el puntero al inicio antes de leer
+            buffer.seek(0)
 
-        # Una vez instanciada la tabla, la insertamos en el documento y ajustamos el ancho de sus columnas
-        wb[sheet_name].add_table(table)
-        wb = ProcessExcel.adjust_columns(wb, sheet_name)
-        wb.save(file)
+            # Abrimos el fichero excel para poder trabajar sobre el 
+            wb = openpyxl.load_workbook(filename=buffer)
+
+            # Con el DataFrame podemos instanciar y dimensionar la tabla
+            dimension = f'A1:{openpyxl.utils.get_column_letter(self.shape[1])}{len(self)+1}'
+            table = openpyxl.worksheet.table.Table(displayName=table_name, ref=dimension)
+            table.tableStyleInfo = STYLE_EXCEL
+
+            # Una vez instanciada la tabla, la insertamos en el documento y ajustamos el ancho de sus columnas
+            wb[sheet_name].add_table(table)
+            wb = ProcessExcel.adjust_columns(wb, sheet_name)
+            
+            # Creamos un nuevo buffer final para la respuesta
+            save_buffer = BytesIO()
+            wb.save(save_buffer)
+            save_buffer.seek(0)
+
+            return save_buffer
+        
+        # Si hay un error, devolvemos None y manejamos la excepcion segun se necesite.
+        except (ValueError, IOError) as e:
+            return None
 
     @staticmethod
-    def read_table(buffer_file: 'BytesIO',  file_name: str, table: str) -> 'PdUtils':
+    def read_table(buffer_file: BytesIO, file_name: str, table: str) -> 'PdUtils':
         """
         Descripcion
         -----------
@@ -207,7 +245,7 @@ class PdUtils(pd.DataFrame):
         return PdUtils(rest, columns=header)
     
     @classmethod
-    def validate_xlsx(self, buffer_file: 'BytesIO', file_name: str, table: str) -> tuple[bool, str]:
+    def validate_xlsx(self, buffer_file: BytesIO, file_name: str, table: str) -> tuple[bool, str]:
         """
         Descripcion
         -----------
@@ -231,8 +269,8 @@ class PdUtils(pd.DataFrame):
         """
         # Vamos a instanciar un diccionario que nos permitira acceder de forma rapida a la verificacion de las columnas de la tabla
         dct_access = {
-            'Tabla_terciario': Templates.Terciario,
-            'Tabla_residencial': Templates.Residencial
+            'terciario': Templates.Terciario,
+            'residencial': Templates.Residencial
         }
 
         # Controlaremos la lectura de los datos sobre el documento, ya que es lo primero a validar, que exista la tabla
@@ -241,11 +279,11 @@ class PdUtils(pd.DataFrame):
 
             # Verificamos si la tabla contiene datos
             if df.empty:
-                return False, f'El documento `{file_name}` no contiene datos en la tabla `{table}` 🔍'
+                return False, f'La tabla `{table}`, en el documento `{file_name}`, no contiene datos 🔍'
 
             # Verificamos si todas las columnas existen
             if not set(Templates.obtain_keys_template(dct_access[table])).issubset(df.columns):
-                return False, f'La tabla `{table}` no contiene todas las columnas necesarias para el calculo, por favor utilice la plantilla 🧐'
+                return False, f'La tabla `{table}`, no contiene todas las columnas necesarias para el calculo, se recomienda usar la plantilla 🧐'
 
         # Si no se existe la tabla, lo indicaremos
         except ValueError:
