@@ -32,6 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
             // Obtenemos la opcion seleccionada
             const selectedOption = select.options[select.selectedIndex]
             const isSalaPci = selectedOption && selectedOption.id === "sala_pci"
+
+            // Desactivamos las celdas en funcion del requerimiento
+            updatePeopleFlow(selectedOption, row)
     
             // Si es sala_pci, habilitamos los inputs y asignamos placeholder y required
             setInputState(potencia_kw, isSalaPci, "Potencia (kW)")
@@ -92,17 +95,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateDynamicRow(select, row, rowIndex) {
         const dynamicTableBody = document.querySelector("#dynamicTable tbody")
         let dynamicRow = dynamicTableBody.querySelector(`tr[data-index="${rowIndex}"]`)
-    
+
         // Si se selecciono un valor valido (distinto de "" y "0")
         if (select.value !== "" && select.value !== "0") {
 
             // Extraemos valores de la fila actual
             const espacioValue = row.querySelector("td:nth-child(1)").textContent.trim()
             const plantaValue = row.querySelector("td:nth-child(2)").textContent.trim()
-    
+            
             // Buscamos la altura de la planta en la tabla de alturas
             const heightsTable = document.querySelector("#heightsTable")
             let alturaPlantaValue = ''
+            let alturaLibreValue = ''
             
             // Recorremos las filas del tbody de heightsTable
             heightsTable.querySelectorAll("tbody tr").forEach(tr => {
@@ -111,13 +115,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     const inputs = tr.querySelectorAll("input[type='number']")
                     if (inputs.length >= 2) {
                     alturaPlantaValue = inputs[0].value
+                    alturaLibreValue = inputs[1].value
                     }
                 }
             })
 
             // Capturamos la superficie desde la tabla de inputs (inputsTable)
-            const inputsTable = document.querySelector("#inputsTable");
-            let superficieValue = '';
+            const inputsTable = document.querySelector("#inputsTable")
+            let superficieValue = ''
             inputsTable.querySelectorAll("tbody tr").forEach(tr => {
                 const tds = tr.querySelectorAll("td")
 
@@ -140,7 +145,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
   
             // Calculamos el caudal (nota: se asume que select.value y alturaPlantaValue son numericos)
-            const caudal = select.value * alturaPlantaValue * superficieValue
+            let caudal = 0
+            if (alturaPlantaValue > 0) {
+                caudal =  select.value * alturaPlantaValue * superficieValue
+            }
+            else {
+                caudal = select.value * alturaLibreValue * superficieValue
+            }
+
+            // Insertamos la fila a la tabla
             dynamicRow.innerHTML = `
                 <td>${espacioValue}</td>
                 <td>${plantaValue}</td>
@@ -153,5 +166,71 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+
+    /**
+     * Desactiva la celda de planta o caudal en la tabla Ocupacion & Caudal (Locales), segun se requiera.
+     * @param {HTMLSelectElement} selectedOption 
+     * @param {HTMLElement} row - Fila (tr) donde se encuentra el select.
+     */
+    function updatePeopleFlow(selectedOption, row) {
+
+        // Lista de excepciones donde se aplica la restriccion
+        const excepciones = ["almacences", "aseos", "lavanderias", "sala_cuadros", "sala_maquinas", "sala_pci", "sala_residuos"]
+        
+        // Extraemos el input de personas y caudal
+        const nPersonas = row.querySelector("input#n_personas")
+        const caudal = row.querySelector("input#caudal_m3h") 
+
+        // Si cambiamos a una opcion en `excepciones` y ambos inputs tienen valores, mostramos la alerta
+        if (excepciones.includes(selectedOption.id) && nPersonas.value.trim() !== "" && caudal.value.trim() !== "") {
+            showAlert(`
+                Solo es posible indicar el numero de personas o el caudal para locales de tipo ${selectedOption.id.replace("_", " de ")}, 
+                por favor ingrese nuevamente los datos para este tipo de local ⚠️`
+            )
+            caudal.value = ""
+            nPersonas.value = "" 
+            caudal.placeholder = "Caudal (m3/h)" 
+            nPersonas.placeholder = "Nº Personas" 
+        }
+
+        // Verificamos si la opcion seleccionada esta en la lista de excepciones
+        if (excepciones.includes(selectedOption.id)) {
+
+            // Sobrescribimos el evento de `input` en Personas para que se reemplace si cambia la seleccion
+            nPersonas.oninput = function () {
+                if (nPersonas.value.trim() !== "") {
+                    caudal.readOnly = true
+                    caudal.value = ""
+                    caudal.placeholder = ""
+                }
+                else {
+                    caudal.readOnly = false 
+                    caudal.placeholder = "Caudal (m3/h)" 
+                }
+            }
+
+            // Sobrescribimos el evento de `input` en Caudal para que se reemplace si cambia la seleccion
+            caudal.oninput = function () {
+                if (caudal.value.trim() !== "") {
+                    nPersonas.readOnly = true
+                    nPersonas.value = "" 
+                    nPersonas.placeholder = "" 
+                } else {
+                    nPersonas.readOnly = false 
+                    nPersonas.placeholder = "Nº Personas" 
+                }
+            }
+
+        // Si la opcion no esta en la lista de excepciones, habilitar ambos campos y eliminar eventos
+        } else {
+            nPersonas.readOnly = false
+            caudal.readOnly = false
+            nPersonas.oninput = null
+            caudal.oninput = null
+            nPersonas.placeholder = "Nº Personas"
+            caudal.placeholder = "Caudal (m3/h)"
+        }
+    }
 })
+
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/  

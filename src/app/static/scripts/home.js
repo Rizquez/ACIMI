@@ -61,17 +61,17 @@ document.addEventListener("DOMContentLoaded", function () {
      * formulario. Arrojando una alerta en caso de enviar un tipo de archivo no permitido.
      */
     fileInput.addEventListener("change", function () {
-        const file = fileInput.files[0];
+        const file = fileInput.files[0]
         if (file) {
-            const fileName = file.name;
-            const fileExtension = fileName.split('.').pop().toLowerCase();
+            const fileName = file.name
+            const fileExtension = fileName.split('.').pop().toLowerCase()
     
             if (fileExtension !== "xlsx") {
-                showAlert("El archivo seleccionado no es un documento Excel válido (.xlsx) ❌");
+                showAlert("El archivo seleccionado no es un documento Excel valido (.xlsx) ❌")
                 fileInput.value = "" // Resetea el input
-                fileNameDisplay.textContent = "No se ha seleccionado ningun archivo";
+                fileNameDisplay.textContent = "No se ha seleccionado ningun archivo"
             } else {
-                fileNameDisplay.textContent = "Archivo seleccionado: " + fileName;
+                fileNameDisplay.textContent = "Archivo seleccionado: " + fileName
             }
         }
     })   
@@ -92,15 +92,15 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     function validateFileSelection() {
         if (fileInput.files.length === 0) {
-            showAlert("Debe subir el documento Excel base con los datos de entrada antes de enviar el formulario 📑");
-            return false;
+            showAlert("Debe subir un documento Excel con los datos de entrada antes de enviar el formulario 📑")
+            return false
         }
     
         // Crear objeto FormData para enviar solo el archivo al backend y validarlo antes de enviarlo completo
-        let formData = new FormData();
-        formData.append("fileupload", fileInput.files[0]);
+        let formData = new FormData()
+        formData.append("fileupload", fileInput.files[0])
     
-        // Enviar la validación al servidor antes de procesar el formulario
+        // Enviar la validacion al servidor antes de procesar el formulario
         return fetch("/submit_data_initial", {
             method: "POST",
             body: formData
@@ -108,16 +108,15 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (!data.success) {
-                showAlert(data.message); // Mostrar alerta si hay error en backend
-                return false;
+                showAlert(data.message) // Mostrar alerta si hay error en backend
+                return false
             }
-            return true; // Si todo está correcto, permitir el envío
+            return true // Si todo esta correcto, permitir el envio
         })
         .catch(error => {
-            console.error("Error en la validación del archivo:", error);
-            showAlert("Hubo un problema al validar el archivo. Intente nuevamente ❌");
-            return false;
-        });
+            // showAlert("Hubo un problema al validar el archivo, intente nuevamente ❌")
+            return false
+        })
     }
     
     /**
@@ -138,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const url = `/download_template/${tipo}`
         const link = document.createElement("a")
         link.href = url
-        link.setAttribute("download", `Calculo_${tipo}.xlsx`)
+        link.setAttribute("download", `Plantilla_calculo_${tipo}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

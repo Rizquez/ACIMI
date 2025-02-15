@@ -29,16 +29,6 @@ FOLDER_ROOT = '\\'.join(item for item in os.path.dirname(os.path.abspath(__file_
 Carpeta raiz donde se ejecuta la aplicacion.
 """
 
-FOLDER_TEMP_UPLOAD = os.path.join(FOLDER_ROOT, 'src', 'app', 'static', 'temp', 'upload')
-"""
-Carpeta temporal para almacenar los archivos cargados a la aplicacion.
-"""
-
-FOLDER_TEMP_DOWNLOAD = os.path.join(FOLDER_ROOT, 'src', 'app', 'static', 'temp', 'download')
-"""
-Carpeta temporal para almacenar los archivos que pueden ser descargados desde la aplicacion.
-"""
-
 STYLE_EXCEL = openpyxl.worksheet.table.TableStyleInfo(name='TableStyleMedium12', showFirstColumn=False, showLastColumn=False)
 """
 Estilo asignado a las tablas que existiran dentro de los documentos Excel creados por la aplicacion.
@@ -102,10 +92,14 @@ class Templates:
         Proporciona constantes que representan los nombres de las columnas de la tabla que se generara dentro del documento `Excel` que 
         sirve de plantila para el calculo residencial.
         """
-
         PLANTA = 'planta'
         ESPACIO = 'espacio'
-        SUPERFICIE = 'superficie'
+        ESCALERA = 'escalera'
+        VIVIENDA = 'vivienda'
+        SUPERFICIE_ESPACIO = 'superficie_espacio_m2'
+        LONGITUD_V_MONTANTE = 'longitud_vertical_m'
+        LONGITUD_H_PLANTA = 'longitud_horizontal_planta_m'
+        LONGITUD_H_CUBIERTA = 'longitud_horizontal_cubierta_m'
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 # FIN DEL FICHERO :)

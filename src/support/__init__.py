@@ -6,7 +6,7 @@
 
 # LIBRERIAS (INTERNAS)
 # -------------------------------------------------------------------------------------------------------------------------------------------------
-from .constants import Templates, ACIMI_VERSION, FOLDER_ROOT, FOLDER_TEMP_UPLOAD, FOLDER_TEMP_DOWNLOAD, STYLE_EXCEL
+from .constants import Templates, ACIMI_VERSION, FOLDER_ROOT, STYLE_EXCEL
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
 # REFERENCIA AL FICHERO LOG (INFO/WARNING/ERROR)
