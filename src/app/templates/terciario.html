@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="terciario">
+<section class="terciario-residencial">
 
     {% if dct_data %}
     <div class="tablas plantas">
@@ -138,6 +138,10 @@
                 </tbody>
             </table>
         </div>
+        <div class="boton-grupo">
+            <button>Agregar grupo</button>
+            <button>Eliminar ultimo grupo</button>
+        </div>
     </div>
 
     <div class="tablas parking">
@@ -165,7 +169,6 @@
             </div>
         {% endif %}
     </div>
-
     {% endif %}
 </section>
 

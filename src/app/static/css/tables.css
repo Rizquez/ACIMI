@@ -1,6 +1,6 @@
 /*------------------------------------------------------------- INICIO DEL FICHERO --------------------------------------------------------------*/
 
-.terciario {
+.terciario-residencial {
     margin: 10px 40px;
     overflow-x: auto;
 }
@@ -58,6 +58,32 @@
 
 .tablas input:focus {
     background-color: var(--bg-300);
+}
+
+.boton-grupo {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    max-width: 15%;
+    margin: 0 auto;
+}
+
+.boton-grupo button {
+    display: block;
+    margin-top: 20px;
+    color: var(--text-100);
+    font-weight:bold;
+    padding: 10px 35px;
+    border: none;
+    cursor: pointer;
+    border-radius: 30px;
+    text-decoration: none;
+    background-color: var(--accent-200);
+}
+
+.boton-grupo button:hover {
+    color: var(--text-200);
+    background-color: var(--accent-100);
 }
 
 /*---------------------------------------------------------------- FIN DEL FICHERO --------------------------------------------------------------*/

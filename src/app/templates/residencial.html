@@ -5,5 +5,73 @@
 {% endblock %}
 
 {% block content %}
-<h1>Hola!! Pronto haremos los calculos de tipo residencial 😉</h1>
+
+<section class="terciario-residencial">
+
+    {% if dct_data %}
+    <div class="tablas plantas">
+        <div>
+            <h1>Datos de entrada (Excel)</h1>
+            <table id="inputsTable">
+                <thead>
+                    <tr>
+                        <th>Escalera</th>
+                        <th>Planta</th>
+                        <th>Vivienda</th>
+                        <th>Superficie Util (m2)</th>
+                        <th>Long. Horizontal Planta (m)</th>
+                        <th>Long. Vertical (m)</th>
+                        <th>Long. Horizontal Cubierta (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(dct_data['escalera']|length) %}
+                    <tr>
+                        <!-- Celda NO editable -->
+                        <td>{{ dct_data['escalera'][i] }}</td>
+                        <td>{{ dct_data['planta'][i] }}</td>
+                        <td>{{ dct_data['vivienda'][i] }}</td>
+        
+                        <!-- Celdas editables con input -->
+                        <td><input type="number" step="0.01" placeholder="Superficie (m2)" value="{{ dct_data['superficie_m2'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Longitud (m)" value="{{ dct_data['longitud_horizontal_planta_m'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Longitud (m)" value="{{ dct_data['longitud_vertical_m'][i] }}" required></td>
+                        <td><input type="number" step="0.01" placeholder="Longitud (m)" value="{{ dct_data['longitud_horizontal_cubierta_m'][i] }}" required></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>    
+            </table>
+        </div>
+
+        {% if lst_plantas %}
+        <div>
+            <h1>Cuadro de alturas</h1>
+            <table id="heightsTable">
+                <thead>
+                    <tr>
+                        <th>Planta</th>
+                        <th>Altura de planta (m)</th>
+                        <th>Altura libre (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(lst_plantas|length) %}
+                    <tr>
+                        <!-- Celda NO editable -->
+                        <td>{{ lst_plantas[i] }}</td>
+
+                        <!-- Celdas editables con input -->
+                        <td><input type="number" step="0.01" placeholder="Altura (m)" required></td>
+                        <td><input type="number" step="0.01" placeholder="Altura (m)" required></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+
+<script src="{{url_for('static', filename='scripts/residencial.js')}}"></script>
 {% endblock %}

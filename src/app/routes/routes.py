@@ -140,18 +140,25 @@ def submit_data_initial():
             dct_data = PdUtils.read_table(buffer_file, file_name, calculotipo).to_dict(orient='list')
             lst_plantas = list(sorted(set(dct_data['planta'])))
 
+            # Renderizado para el calculo terciario
             if calculotipo == 'terciario':
                 return render_template(
                     'terciario.html', 
-                    dct_data=dct_data, 
-                    lst_plantas=lst_plantas,
+                    dct_data = dct_data, 
+                    lst_plantas = lst_plantas,
                     dct_zonas = {
                         'parking': int(plantas_parking),
                         'sobrepresion': int(zonas_sobrepresionar)
                     }
                 )
+            
+            # Renderizado para el calculo residencial
             else:
-                return render_template('residencial.html')
+                return render_template(
+                    'residencial.html',
+                    dct_data = dct_data, 
+                    lst_plantas = lst_plantas
+                )
         
         # En caso contrario, enviamos el mensaje obtenido de la validacion al front
         else:

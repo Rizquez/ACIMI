@@ -19,7 +19,7 @@ import openpyxl.worksheet.table
 # OPERATIVO
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
-ACIMI_VERSION = '0.0.0'
+ACIMI_VERSION = '0.2.0'
 """
 Version de la aplicacion.
 """
@@ -93,10 +93,9 @@ class Templates:
         sirve de plantila para el calculo residencial.
         """
         PLANTA = 'planta'
-        ESPACIO = 'espacio'
         ESCALERA = 'escalera'
         VIVIENDA = 'vivienda'
-        SUPERFICIE_ESPACIO = 'superficie_espacio_m2'
+        SUPERFICIE = 'superficie_m2'
         LONGITUD_V_MONTANTE = 'longitud_vertical_m'
         LONGITUD_H_PLANTA = 'longitud_horizontal_planta_m'
         LONGITUD_H_CUBIERTA = 'longitud_horizontal_cubierta_m'

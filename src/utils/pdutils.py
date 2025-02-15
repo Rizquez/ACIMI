@@ -91,8 +91,7 @@ class PdUtils(pd.DataFrame):
                 Templates.Residencial.ESCALERA: [Templates.VALUE_EMPTY],
                 Templates.Residencial.PLANTA: [Templates.VALUE_EMPTY],
                 Templates.Residencial.VIVIENDA: [Templates.VALUE_EMPTY],
-                Templates.Residencial.ESPACIO: [Templates.VALUE_EMPTY],
-                Templates.Residencial.SUPERFICIE_ESPACIO: [Templates.ZERO],
+                Templates.Residencial.SUPERFICIE: [Templates.ZERO],
                 Templates.Residencial.LONGITUD_H_PLANTA: [Templates.ZERO],
                 Templates.Residencial.LONGITUD_V_MONTANTE: [Templates.ZERO],
                 Templates.Residencial.LONGITUD_H_CUBIERTA: [Templates.ZERO]
