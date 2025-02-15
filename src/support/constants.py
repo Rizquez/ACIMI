@@ -19,7 +19,7 @@ import openpyxl.worksheet.table
 # OPERATIVO
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
-ACIMI_VERSION = '0.2.0'
+ACIMI_VERSION = '0.2.1'
 """
 Version de la aplicacion.
 """
