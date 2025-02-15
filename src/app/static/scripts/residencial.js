@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     numericInputs.forEach(addNumericInputListeners)
 
     /**
-     * Agrega los listeners necesarios a un input numerico para evitar caracteres o valores no deseados.
+     * @description Agrega los listeners necesarios a un input numerico para evitar caracteres o valores no deseados.
      * @param {HTMLInputElement} input 
      */
     function addNumericInputListeners(input) {

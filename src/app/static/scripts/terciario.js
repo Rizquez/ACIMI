@@ -6,6 +6,9 @@
  */
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Metodo para controlar los checkbox
+    handleCheckboxSelection()
+
     // Asignamos listeners a los inputs numericos
     const numericInputs = document.querySelectorAll("table input[type='number']")
     numericInputs.forEach(addNumericInputListeners)
@@ -45,9 +48,19 @@ document.addEventListener("DOMContentLoaded", () => {
             updateDynamicRow(select, row, rowIndex)
         })
     })
+
+    // Obtenemos referencias a los botones sobre la generacion de grupos e instanciamos el contador de grupos
+    let groupCount = 0
+    const addGroupButton = document.querySelector(".boton-grupo button:nth-child(1)")
+    const removeGroupButton = document.querySelector(".boton-grupo button:nth-child(2)")
+
+    // Inicialmente ocultamos el boton de eliminar y asignamos eventos a los botones
+    removeGroupButton.style.display = "none"
+    addGroupButton.addEventListener("click", addGroupColumn)
+    removeGroupButton.addEventListener("click", removeLastGroupColumn)
   
     /**
-     * Agrega los listeners necesarios a un input numerico para evitar caracteres o valores no deseados.
+     * @description Agrega los listeners necesarios a un input numerico para evitar caracteres o valores no deseados.
      * @param {HTMLInputElement} input 
      */
     function addNumericInputListeners(input) {
@@ -73,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     /**
-     * Configura el estado (habilitado/deshabilitado, placeholder y required) de un input.
+     * @description Configura el estado (habilitado/deshabilitado, placeholder y required) de un input.
      * @param {HTMLInputElement} input 
      * @param {boolean} enable - Si es true, habilita el input y asigna el placeholder de lo contrario, lo deshabilita.
      * @param {string} placeholder - Texto a asignar como placeholder cuando se habilita.
@@ -86,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     /**
-     * Actualiza (o elimina) la fila correspondiente en la tabla dinamica (#dynamicTable)
+     * @description Actualiza (o elimina) la fila correspondiente en la tabla dinamica (#dynamicTable) 
      * basandose en el valor del select y otros datos obtenidos de la fila actual y las tablas de alturas e inputs.
      * @param {HTMLSelectElement} select 
      * @param {HTMLElement} row - Fila (tr) donde se encuentra el select.
@@ -94,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     function updateDynamicRow(select, row, rowIndex) {
         const dynamicTableBody = document.querySelector("#dynamicTable tbody")
+        const dynamicTableHead = document.querySelector("#dynamicTable thead tr")
         let dynamicRow = dynamicTableBody.querySelector(`tr[data-index="${rowIndex}"]`)
 
         // Si se selecciono un valor valido (distinto de "" y "0")
@@ -153,12 +167,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 caudal = select.value * alturaLibreValue * superficieValue
             }
 
-            // Insertamos la fila a la tabla
-            dynamicRow.innerHTML = `
+            // Obtenemos el numero total de columnas en la tabla (incluyendo las dinamicas)
+            const totalColumns = dynamicTableHead.querySelectorAll("th").length;
+
+
+            // Generamos las celdas base (Espacio, Planta, Caudal)
+            let rowContent = `
                 <td>${espacioValue}</td>
                 <td>${plantaValue}</td>
-                <td>${caudal}</td>
+                <td>${Number((caudal).toFixed(2))}</td>
             `
+
+            // Si hay más de 3 columnas, agregar checkboxes en las celdas adicionales
+            for (let i = 4; i <= totalColumns; i++) {
+                rowContent += `
+                    <td>
+                        <input type="checkbox" name="grupo_${i - 3}" value="agrupacion_${i - 3}">
+                    </td>
+                `
+            }
+
+            // Insertamos la fila con el contenido actualizado
+            dynamicRow.innerHTML = rowContent
         } else {
             // Si se vuelve a la opcion por defecto, eliminamos la fila dinamica si existe
             if (dynamicRow) {
@@ -168,19 +198,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Desactiva la celda de planta o caudal en la tabla Ocupacion & Caudal (Locales), segun se requiera.
+     * @description Desactiva la celda de planta o caudal en la tabla Ocupacion & Caudal (Locales), segun se requiera.
      * @param {HTMLSelectElement} selectedOption 
      * @param {HTMLElement} row - Fila (tr) donde se encuentra el select.
      */
     function updatePeopleFlow(selectedOption, row) {
+        const nPersonas = row.querySelector("input#n_personas")
+        const caudal = row.querySelector("input#caudal_m3h") 
 
         // Lista de excepciones donde se aplica la restriccion
         const excepciones = ["almacences", "aseos", "lavanderias", "sala_cuadros", "sala_maquinas", "sala_pci", "sala_residuos"]
         
-        // Extraemos el input de personas y caudal
-        const nPersonas = row.querySelector("input#n_personas")
-        const caudal = row.querySelector("input#caudal_m3h") 
-
         // Si cambiamos a una opcion en `excepciones` y ambos inputs tienen valores, mostramos la alerta
         if (excepciones.includes(selectedOption.id) && nPersonas.value.trim() !== "" && caudal.value.trim() !== "") {
             showAlert(`
@@ -230,6 +258,104 @@ document.addEventListener("DOMContentLoaded", () => {
             nPersonas.placeholder = "Nº Personas"
             caudal.placeholder = "Caudal (m3/h)"
         }
+    }
+    
+    /**
+     * @description Agrega una nueva columna "Grupo N" en la tabla dinamica de agrupacion de locales por equipos mecanicos.
+     */
+    function addGroupColumn() {
+        const dynamicTableHead = document.querySelector("#dynamicTable thead tr")
+        const dynamicTableBody = document.querySelector("#dynamicTable tbody")
+        groupCount++
+    
+        // Creamos y añadimos nueva columna en la cabecera
+        const newHeader = document.createElement("th")
+        newHeader.textContent = `Grupo ${groupCount}`
+        dynamicTableHead.appendChild(newHeader)
+
+        // Añadimos una celda en cada fila existente
+        dynamicTableBody.querySelectorAll("tr").forEach(row => {
+            const newCell = document.createElement("td")
+            
+            // Creamos el checkbox asignando un nombre unico basado en el grupo
+            const checkbox = document.createElement("input")
+            checkbox.type = "checkbox"
+            checkbox.name = `grupo_${groupCount}`
+            checkbox.value = `agrupacion_${groupCount}`
+            
+            // Insertamos el checkbox en la celda
+            newCell.appendChild(checkbox)
+            row.appendChild(newCell)
+        })
+
+        // Mostramos el boton de eliminar si hay grupos
+        removeGroupButton.style.display = "inline-block"
+    }
+
+    /**
+     * @description Elimina una nueva columna "Grupo N" en la tabla dinamica de agrupacion de locales por equipos mecanicos.
+     */
+    function removeLastGroupColumn() {
+
+        // Verificamos si existen grupo para eliminar
+        if (groupCount > 0) {
+            const dynamicTableHead = document.querySelector("#dynamicTable thead tr")
+            const dynamicTableBody = document.querySelector("#dynamicTable tbody")
+            const headers = dynamicTableHead.querySelectorAll("th")
+            const groupHeaders = Array.from(headers).filter(th => th.textContent.startsWith("Grupo "))
+
+            // Verificamos si existen grupos en la cabecera de la tabla
+            if (groupHeaders.length > 0) {
+
+                // Eliminamos solo la ultima columna de grupo
+                const lastGroupHeader = groupHeaders[groupHeaders.length - 1]
+                dynamicTableHead.removeChild(lastGroupHeader)
+
+                // Eliminamos la ultima celda de grupo en cada fila del cuerpo
+                dynamicTableBody.querySelectorAll("tr").forEach(row => {
+                    const cells = row.querySelectorAll("td")
+
+                    // Controlamos para eliminar solo si hay suficientes celdas
+                    if (cells.length >= headers.length) { 
+                        row.removeChild(cells[cells.length - 1])
+                    }
+                })
+
+                // Disminuimos la cantidad del grupo y ocultamos el boton de eliminar si ya no hay columnas de grupo
+                groupCount--
+                if (groupCount === 0) {
+                    removeGroupButton.style.display = "none"
+                }
+            }
+        }
+    }
+
+    /**
+     * @description Controla que solo un checkbox pueda estar marcado a la vez en cada fila de la tabla.
+     */
+    function handleCheckboxSelection() {
+        const dynamicTableBody = document.querySelector("#dynamicTable tbody")
+        
+        dynamicTableBody.addEventListener("change", function (event) {
+            if (event.target.type === "checkbox") {
+                const row = event.target.closest("tr")
+                const checkboxes = row.querySelectorAll("input[type='checkbox']")
+
+                if (event.target.checked) {
+                    // Deshabilitamos los demas checkboxes en la fila
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox !== event.target) {
+                            checkbox.disabled = true
+                        }
+                    })
+                } else {
+                    // Reactivamos todos los checkboxes cuando se desmarca
+                    checkboxes.forEach(checkbox => {
+                        checkbox.disabled = false
+                    })
+                }
+            }
+        })
     }
 })
 
